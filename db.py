@@ -10,22 +10,24 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 company TEXT,
                 position TEXT,
-                status TEXT
+                status TEXT,
+                url TEXT,
+                created_at TEXT DEFAULT (DATE('now'))
             )
             """
         )
 
-def add_vacancy(company, position):
+def add_vacancy(company, position, url):
     with sqlite3.connect(DB_NAME) as conn:
         conn.execute(
-            "INSERT INTO vacancies (company, position, status) VALUES (?, ?, ?)",
+            "INSERT INTO vacancies (company, position, url, status) VALUES (?, ?, ?, ?)",
             (company, position, "sent"),
         )
 
 def get_all_vacancies():
     with sqlite3.connect(DB_NAME) as conn:
         rows = conn.execute(
-            "SELECT id, company, position, status FROM vacancies"
+            "SELECT id, company, position, url, status, created_at FROM vacancies"
             ).fetchall()
         return rows
 

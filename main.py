@@ -1,5 +1,6 @@
 import db
 
+STATUSES = ("applied", "test task", "interview", "offer", "rejected")
 
 def show_menu():
     print("\n====================")
@@ -11,7 +12,7 @@ def show_menu():
     print("====================\n")
 
 def add_vacancy():
-    db.add_vacancy(company=input("company name:\n"), position=input("position:\n"))
+    db.add_vacancy(company=input("company name:\n"), position=input("position:\n"), url=input("Job URL (optional):\n").strip() or "-")
 
 def show_vacancies():
     rows = db.get_all_vacancies()
@@ -19,7 +20,7 @@ def show_vacancies():
         print("list is empty")
     else:
         for r in rows:
-            print(f"{r[0]}. {r[1]} - {r[2]} [{r[3]}]")
+            print(f"{r[0]}. {r[1]} - {r[2]} {r[3]} [{r[4]}] {r[5]}")
 
 def update_status():
     try:
@@ -27,7 +28,17 @@ def update_status():
     except ValueError as e:
         print(f"{e} - can't use symbols or letters")
         return
-    new_status = input("new status:\n")
+    for i, status in enumerate(STATUSES, start=1):
+        print(f"{i}. {status}")
+    try:
+        status_choice = int(input("new status number:\n"))
+    except ValueError:
+        print("invalid status number")
+        return
+    if not 1 <= status_choice <= len(STATUSES):
+        print("invalid status number")
+        return
+    new_status = STATUSES[status_choice - 1]
     updated = db.update_vacancy_status(vacancy_id, new_status)
     if updated == 0:
         print("ID doesn't exist")
