@@ -21,7 +21,7 @@ def add_vacancy(company, position, url):
     with sqlite3.connect(DB_NAME) as conn:
         conn.execute(
             "INSERT INTO vacancies (company, position, url, status) VALUES (?, ?, ?, ?)",
-            (company, position, "sent"),
+            (company, position, url, "applied"),
         )
 
 def get_all_vacancies():
