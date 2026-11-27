@@ -17,6 +17,29 @@ def init_db():
             """
         )
 
+def search_by_company(query):
+    with sqlite3.connect(DB_NAME) as conn:
+        rows = conn.execute(
+            "SELECT id, company, position, url, status, created_at FROM vacancies WHERE company LIKE ?",
+            (f"%{query}%",)
+        ).fetchall()
+        return rows
+
+def filter_by_status(status):
+    with sqlite3.connect(DB_NAME) as conn:
+        rows = conn.execute(
+            "SELECT id, company, position, url, status, created_at FROM vacancies WHERE status = ?",
+            (status,)
+        ).fetchall()
+        return rows
+
+def get_stats():
+    with sqlite3.connect(DB_NAME) as conn:
+        rows = conn.execute(
+            "SELECT status, COUNT(*) FROM vacancies GROUP BY status"
+        ).fetchall()
+        return rows
+
 def add_vacancy(company, position, url):
     with sqlite3.connect(DB_NAME) as conn:
         conn.execute(

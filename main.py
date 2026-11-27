@@ -8,19 +8,54 @@ def show_menu():
     print("2. show")
     print("3. change status")
     print("4. delete")
+    print("5. search by company")
+    print("6. filter by status")
+    print("7. statistics")
     print("0. exit")
     print("====================\n")
+
+def search_vacancies():
+    rows = db.search_by_company(query=input("company name:\n"))
+    print_vacancies(rows)
+
+def filter_vacancies():
+    for i, status in enumerate(STATUSES, start=1):
+        print(f"{i}. {status}")
+    try:
+        status_choice = int(input("status number:\n"))
+    except ValueError:
+        print("invalid status number")
+        return
+    if not 1 <= status_choice <= len(STATUSES):
+        print("invalid status number")
+        return
+    status = STATUSES[status_choice - 1]
+    rows = db.filter_by_status(status)
+    print_vacancies(rows)
+
+def show_stats():
+    stats = db.get_stats()
+    if not stats:
+        print("list is empty")
+    else:
+        total = sum(count for _, count in stats)
+        print(f"Total: {total}")
+        for status, count in stats:
+            print(f"{status}: {count}")
+
+def print_vacancies(rows):
+    if not rows:
+        print("list is empty")
+    else:
+        for r in rows:
+            print(f"{r[0]}. {r[1]} - {r[2]} {r[3]} [{r[4]}] {r[5]}")
 
 def add_vacancy():
     db.add_vacancy(company=input("company name:\n"), position=input("position:\n"), url=input("Job URL (optional):\n").strip() or "-")
 
 def show_vacancies():
     rows = db.get_all_vacancies()
-    if not rows:
-        print("list is empty")
-    else:
-        for r in rows:
-            print(f"{r[0]}. {r[1]} - {r[2]} {r[3]} [{r[4]}] {r[5]}")
+    print_vacancies(rows)
 
 def update_status():
     try:
@@ -77,6 +112,12 @@ def main():
             update_status()
         elif choice == "4":
             delete_vacancy()
+        elif choice == "5":
+            search_vacancies()
+        elif choice == "6":
+            filter_vacancies()
+        elif choice == "7":
+            show_stats()
         else:
             print("unknown command")
 
